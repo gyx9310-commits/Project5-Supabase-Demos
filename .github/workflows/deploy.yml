@@ -28,26 +28,8 @@ jobs:
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli
 
-      - name: Debug - verify secrets are set (masked)
-        run: |
-          if [ -n "${{ secrets.TCB_SECRET_ID }}" ]; then
-            echo "TCB_SECRET_ID is set (length: $(echo -n '${{ secrets.TCB_SECRET_ID }}' | wc -c))"
-          else
-            echo "WARNING: TCB_SECRET_ID is NOT set!"
-          fi
-          if [ -n "${{ secrets.TCB_SECRET_KEY }}" ]; then
-            echo "TCB_SECRET_KEY is set (length: $(echo -n '${{ secrets.TCB_SECRET_KEY }}' | wc -c))"
-          else
-            echo "WARNING: TCB_SECRET_KEY is NOT set!"
-          fi
-          if [ -n "${{ secrets.TCB_ENV_ID }}" ]; then
-            echo "TCB_ENV_ID is set: ${{ secrets.TCB_ENV_ID }}"
-          else
-            echo "WARNING: TCB_ENV_ID is NOT set!"
-          fi
-
       - name: Login and Deploy to CloudBase
         working-directory: apps/project-burger-shop-auth-users-2
         run: |
-          tcb login --apiKeyId "${{ secrets.TCB_SECRET_ID }}" --apiKey "${{ secrets.TCB_SECRET_KEY }}"
+          tcb login --apiKeyId "${{ secrets.TENCENT_SECRET_ID }}" --apiKey "${{ secrets.TENCENT_SECRET_KEY }}"
           tcb hosting deploy ./out / -e "${{ secrets.TCB_ENV_ID }}"
