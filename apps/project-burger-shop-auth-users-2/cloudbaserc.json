@@ -1,0 +1,10 @@
+{
+  "envId": "YOUR_TCB_ENV_ID",
+  "functionRoot": "cloudfunctions",
+  "staticWebsite": {
+    "uploadDir": "out",
+    "configs": {
+      "errorPage": "index.html"
+    }
+  }
+}

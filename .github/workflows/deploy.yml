@@ -1,0 +1,45 @@
+name: Deploy to CloudBase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: apps/project-burger-shop-auth-users-2/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/project-burger-shop-auth-users-2
+        run: npm ci
+
+      - name: Build static site
+        working-directory: apps/project-burger-shop-auth-users-2
+        run: npm run build
+
+      - name: Install CloudBase CLI
+        run: npm install -g @cloudbase/cli
+
+      - name: Deploy to CloudBase
+        working-directory: apps/project-burger-shop-auth-users-2
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        run: tcb hosting deploy out/ -e ${{ secrets.TCB_ENV_ID }}
+
+      - name: Clean up
+        if: always()
+        run: rm -rf ~/.cloudbase
