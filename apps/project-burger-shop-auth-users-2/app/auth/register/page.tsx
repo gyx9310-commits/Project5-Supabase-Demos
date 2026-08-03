@@ -7,6 +7,8 @@ import {
   saveSupabaseSettings
 } from '@/lib/supabase/dynamic-client';
 import Settings from '../../components/Settings';
+import GitHubButton from '../../components/social-auth-buttons/GitHubButton';
+import GoogleButton from '../../components/social-auth-buttons/GoogleButton';
 import Link from 'next/link';
 
 export default function RegisterPage() {
@@ -52,6 +54,39 @@ export default function RegisterPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Operation failed');
     } finally {
+      setLoading(false);
+    }
+  }
+
+  async function signInWithOAuth(provider: 'github' | 'google') {
+    if (!supabaseClient) return;
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { data, error: err } = await supabaseClient.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo, skipBrowserRedirect: true }
+      });
+      if (err) {
+        const msg = String(err.message || 'Login failed');
+        if (msg.toLowerCase().includes('provider is not enabled')) {
+          setError(`Provider "${provider}" is not enabled in Supabase Dashboard. Go to Authentication → Providers, enable ${provider}, save, and retry.`);
+        } else {
+          setError(msg);
+        }
+        setLoading(false);
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        setError('No redirect URL obtained. Please check your configuration.');
+        setLoading(false);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'OAuth failed');
       setLoading(false);
     }
   }
@@ -103,6 +138,20 @@ export default function RegisterPage() {
           {loading ? 'Processing...' : 'Sign Up'}
         </button>
       </form>
+
+      {/* Divider */}
+      <div className="relative my-4">
+        <div className="border-t border-neutral-200" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="bg-neutral-50 px-3 text-sm text-neutral-500">Or sign up with</span>
+        </div>
+      </div>
+
+      {/* OAuth Buttons */}
+      <div className="space-y-2">
+        <GoogleButton onClick={() => signInWithOAuth('google')} disabled={loading} />
+        <GitHubButton onClick={() => signInWithOAuth('github')} disabled={loading} />
+      </div>
 
       <div className="mt-3 text-sm text-neutral-600">
         Already have an account? <Link href="/auth/login" className="text-burger-red">Sign in</Link>
