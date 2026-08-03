@@ -8,10 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      TENCENTCLOUD_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
-      TENCENTCLOUD_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
-      TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,9 +28,11 @@ jobs:
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli
 
-      - name: Login CloudBase CLI (key mode)
-        run: echo -e "${{ secrets.TCB_SECRET_ID }}\n${{ secrets.TCB_SECRET_KEY }}" | tcb login --key
-
       - name: Deploy to CloudBase Static Hosting
         working-directory: apps/project-burger-shop-auth-users-2
-        run: tcb hosting deploy ./out / -e ${{ secrets.TCB_ENV_ID }}
+        env:
+          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
+          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
+        run: |
+          printf '%s\n%s\n' "$TCB_SECRET_ID" "$TCB_SECRET_KEY" | tcb login --key
+          tcb hosting deploy ./out / -e ${{ secrets.TCB_ENV_ID }}
