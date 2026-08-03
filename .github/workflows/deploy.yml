@@ -23,7 +23,11 @@ jobs:
 
       - name: Build static site
         working-directory: apps/project-burger-shop-auth-users-2
-        run: npm run build
+        run: |
+          # Supabase anon key is public by design (protected by RLS)
+          echo "NEXT_PUBLIC_SUPABASE_URL=https://azvqwitkcfrvswdyedpy.supabase.co" > .env.production
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF6dnF3aXRrY2ZydnN3ZHllZHB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NzA5NTUsImV4cCI6MjEwMTA0Njk1NX0.Hpi2qW0RsNvOVirP-IJ8-lHr8dLWFzQgpCLP4Irtccs" >> .env.production
+          npm run build
 
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli
