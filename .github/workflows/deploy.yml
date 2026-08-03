@@ -5,9 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -33,12 +30,12 @@ jobs:
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli
 
+      - name: Login CloudBase CLI
+        run: tcb login --apiKeyId ${{ secrets.TENCENT_SECRET_ID }} --apiKey ${{ secrets.TENCENT_SECRET_KEY }}
+
       - name: Deploy to CloudBase
         working-directory: apps/project-burger-shop-auth-users-2
-        env:
-          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
-          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
-        run: tcb hosting deploy out/ -e ${{ secrets.TCB_ENV_ID }}
+        run: tcb hosting deploy ./out / -e ${{ secrets.TCB_ENV_ID }}
 
       - name: Clean up
         if: always()
