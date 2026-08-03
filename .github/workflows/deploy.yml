@@ -16,8 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: apps/project-burger-shop-auth-users-2/package-lock.json
 
       - name: Install dependencies
         working-directory: apps/project-burger-shop-auth-users-2
@@ -30,13 +28,12 @@ jobs:
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli
 
-      - name: Login CloudBase CLI
-        run: tcb login --apiKeyId ${{ secrets.TENCENT_SECRET_ID }} --apiKey ${{ secrets.TENCENT_SECRET_KEY }}
-
-      - name: Deploy to CloudBase
+      - name: Login and Deploy to CloudBase
         working-directory: apps/project-burger-shop-auth-users-2
-        run: tcb hosting deploy ./out / -e ${{ secrets.TCB_ENV_ID }}
-
-      - name: Clean up
-        if: always()
-        run: rm -rf ~/.cloudbase
+        env:
+          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
+          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
+          TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
+        run: |
+          tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
+          tcb hosting deploy ./out / -e "$TCB_ENV_ID"
