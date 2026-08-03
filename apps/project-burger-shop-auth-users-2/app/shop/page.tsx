@@ -49,7 +49,7 @@ export default function ShopPage() {
 
   useEffect(() => {
     if (!supabaseClient) return;
-    supabaseClient.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    supabaseClient.auth.getUser().then(({ data }: any) => setUserId(data.user?.id ?? null));
     const { data: sub } = supabaseClient.auth.onAuthStateChange((_evt: any, session: any) => {
       setUserId(session?.user?.id ?? null);
     });

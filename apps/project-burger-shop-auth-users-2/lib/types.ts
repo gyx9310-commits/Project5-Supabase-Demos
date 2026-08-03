@@ -19,6 +19,10 @@ export interface PromoCode {
   description?: string;
   discount_type: 'percentage' | 'fixed_amount';
   discount_value: number;
+  valid_from?: string | null;
+  valid_until?: string | null;
+  min_order_cents?: number;
+  usage_limit?: number;
   used_count: number;
   is_active: boolean;
   created_at: string;

@@ -201,7 +201,7 @@ export class PromoCodesService {
     }
 
     const now = new Date();
-    const validFrom = new Date(promoCode.valid_from);
+    const validFrom = promoCode.valid_from ? new Date(promoCode.valid_from) : new Date(0);
     const validUntil = promoCode.valid_until ? new Date(promoCode.valid_until) : null;
 
     if (now < validFrom) {
@@ -212,10 +212,10 @@ export class PromoCodesService {
       return { valid: false, error: 'Promo code expired' };
     }
 
-    if (orderAmountCents < promoCode.min_order_cents) {
-      return { 
-        valid: false, 
-        error: `Order minimum is $${(promoCode.min_order_cents / 100).toFixed(2)}` 
+    if (promoCode.min_order_cents && orderAmountCents < promoCode.min_order_cents) {
+      return {
+        valid: false,
+        error: `Order minimum is $${(promoCode.min_order_cents / 100).toFixed(2)}`
       };
     }
 

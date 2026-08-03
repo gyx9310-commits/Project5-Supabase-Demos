@@ -46,7 +46,7 @@ export default function AdminPage() {
   // auth + profile
   useEffect(() => {
     if (!supabaseClient) return;
-    supabaseClient.auth.getUser().then(({ data }) => {
+    supabaseClient.auth.getUser().then(({ data }: any) => {
       setUserId(data.user?.id ?? null);
       setUserEmail(data.user?.email ?? null);
     });
